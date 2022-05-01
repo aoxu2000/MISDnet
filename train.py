@@ -28,7 +28,7 @@ mask_dir = Path('../stage2/p_mask')
 
 def train(epoch):
     net.train()
-    with tqdm(range(len(train_loader)), desc='Train') as pbar:
+    with tqdm(range(len(train_loader)), desc=F'EPOCH {epoch}') as pbar:
         for batch_id, batch in enumerate(train_loader):
 
             inputs = batch['image'].to(device)
@@ -65,7 +65,7 @@ def eval(epoch):
             dice_score += dice_coeff(pred_masks, masks)
 
         writer.add_scalar('Val/DICE SCORE', dice_score / len(val_loader), epoch)
-        print(f'Val/IOU: {dice_score / len(val_loader)}')
+        print(f'Val/DICE SCORE: {dice_score / len(val_loader)}\n')
 
 
 def get_args():
@@ -116,7 +116,7 @@ if __name__ == '__main__':
     # optimizer = optim.Adam(net.parameters(), lr=args.learning_rate)
     optimizer = optim.SGD(filter(lambda p: p.requires_grad, net.parameters()), lr=args.lr, momentum=0.9)
 
-    train_scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.1, patience=10)
+    train_scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.1, patience=100)
 
     # ce_loss = nn.CrossEntropyLoss()
     dice_loss = BinaryDiceLoss()
